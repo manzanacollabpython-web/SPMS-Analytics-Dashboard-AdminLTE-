@@ -1,74 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Q1 Compliance Dashboard</title>
+<title>FINAL BOSS DASHBOARD</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
   margin:0;
-  font-family: Arial;
-  background:#0f3b44;
+  font-family: 'Segoe UI';
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
   color:white;
+  height:100vh;
   overflow:hidden;
 }
 
 .container{
   height:100vh;
-  display:flex;
-  flex-direction:column;
+  display:grid;
+  grid-template-rows: auto auto 1fr 1fr;
+  gap:10px;
   padding:10px;
 }
 
-h1{
+/* TITLE */
+.title{
   text-align:center;
-  margin:5px;
+  font-size:28px;
+  font-weight:bold;
+  letter-spacing:2px;
 }
 
+/* BOXES */
 .row{
-  display:flex;
+  display:grid;
+  grid-template-columns: repeat(4,1fr);
   gap:10px;
-  margin-bottom:10px;
 }
 
 .box{
-  flex:1;
-  background:#1b5a63;
-  border-radius:10px;
-  padding:10px;
+  background: rgba(255,255,255,0.05);
+  border-radius:15px;
+  padding:15px;
   text-align:center;
-  border:1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
 }
 
 .big{
-  font-size:35px;
+  font-size:32px;
   font-weight:bold;
 }
 
+/* PANELS */
 .middle{
-  display:flex;
+  display:grid;
+  grid-template-columns: 2fr 1fr;
   gap:10px;
-  flex:1;
-}
-
-.panel{
-  flex:1;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  border-radius:15px;
-  padding:10px;
-  border:1px solid rgba(255,255,255,0.2);
 }
 
 .bottom{
-  display:flex;
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
   gap:10px;
-  flex:1;
 }
 
+.panel{
+  background: rgba(255,255,255,0.05);
+  border-radius:15px;
+  padding:10px;
+  backdrop-filter: blur(10px);
+}
+
+/* FIX SA CUT CHART */
 canvas{
+  width:100% !important;
   height:100% !important;
+}
+
+.panel canvas{
+  max-height:100%;
+}
+
+/* IMPORTANT FIX */
+.panel{
+  display:flex;
+  flex-direction:column;
+}
+
+.panel h4{
+  margin:5px;
+}
+
+.chart{
+  flex:1;
+  position:relative;
 }
 </style>
 </head>
@@ -77,19 +104,7 @@ canvas{
 
 <div class="container">
 
-<h1>Q1 COMPLIANCE DASHBOARD</h1>
-
-<!-- TOP -->
-<div class="row">
-  <div class="box">
-    <div>Average</div>
-    <div class="big" id="avg">0%</div>
-  </div>
-  <div class="box">
-    <div>Overall</div>
-    <div class="big" id="overall">0%</div>
-  </div>
-</div>
+<div class="title">Q1 COMPLIANCE DASHBOARD</div>
 
 <!-- KPI -->
 <div class="row">
@@ -101,64 +116,71 @@ canvas{
 
 <!-- MIDDLE -->
 <div class="middle">
+
   <div class="panel">
     <h4>Performance</h4>
-    <canvas id="barChart"></canvas>
+    <div class="chart">
+      <canvas id="barChart"></canvas>
+    </div>
   </div>
 
   <div class="panel">
     <h4>Status</h4>
-    <canvas id="pieChart"></canvas>
+    <div class="chart">
+      <canvas id="pieChart"></canvas>
+    </div>
   </div>
+
 </div>
 
 <!-- BOTTOM -->
 <div class="bottom">
+
   <div class="panel">
     <h4>Category</h4>
-    <canvas id="pie1"></canvas>
+    <div class="chart">
+      <canvas id="pie1"></canvas>
+    </div>
   </div>
 
   <div class="panel">
     <h4>Reported</h4>
-    <canvas id="pie2"></canvas>
+    <div class="chart">
+      <canvas id="pie2"></canvas>
+    </div>
   </div>
 
   <div class="panel">
     <h4>Compliance</h4>
-    <canvas id="pie3"></canvas>
+    <div class="chart">
+      <canvas id="pie3"></canvas>
+    </div>
   </div>
-</div>
 
 </div>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</div>
 
 <script>
 
-// 🔥 DARK MODE FIX
-Chart.defaults.color = "white";
-Chart.defaults.borderColor = "rgba(255,255,255,0.2)";
-
-// 🔥 GOOGLE SHEET (FINAL)
+// 🔥 WORKING GOOGLE SHEET CSV
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQtsHSDvB8iC3RSfJRmKf3MOkVb3LKkZ98aTxik3vDeOINaEFQW-4l_vTetjU05LszMK7cytmBq-i6n/pub?gid=959972291&single=true&output=csv";
 
 fetch(sheetURL)
-.then(res => res.json())
-.then(data => {
+.then(res => res.text())
+.then(csv => {
 
-if(!Array.isArray(data)){
-  alert("❌ Check your Sheet name or sharing settings");
-  console.log(data);
-  return;
-}
+const rows = csv.split("\n").map(r => r.split(","));
+const headers = rows[0];
 
-// =======================
+const data = rows.slice(1).map(row => {
+  let obj = {};
+  headers.forEach((h,i)=> obj[h.trim()] = row[i]);
+  return obj;
+});
 
 let total = data.length;
 let ontime = 0, late = 0, notsubmitted = 0;
-let sum = 0;
 
 let labels = [];
 let values = [];
@@ -167,7 +189,6 @@ data.forEach(row=>{
 let perf = parseFloat(row["PERFORMANCE RATE"]) || 0;
 let status = (row["STATUS"]||"").toLowerCase();
 
-sum += perf;
 labels.push(row["INDICATOR"]);
 values.push(perf);
 
@@ -176,45 +197,20 @@ else if(status.includes("late")) late++;
 else notsubmitted++;
 });
 
-let avg = (sum/total).toFixed(2);
-
-// =======================
-// DISPLAY
-
+// KPI
 document.getElementById("total").innerText = total;
-document.getElementById("avg").innerText = avg+"%";
-document.getElementById("overall").innerText = avg+"%";
-
 document.getElementById("ontime").innerText = ((ontime/total)*100).toFixed(1)+"%";
 document.getElementById("late").innerText = ((late/total)*100).toFixed(1)+"%";
 document.getElementById("notsubmitted").innerText = ((notsubmitted/total)*100).toFixed(1)+"%";
 
-// =======================
-// BAR CHART
-
+// BAR
 new Chart(document.getElementById("barChart"),{
 type:'bar',
-data:{
-labels:labels,
-datasets:[{
-data:values,
-backgroundColor:'#4fc3f7'
-}]
-},
-options:{
-responsive:true,
-maintainAspectRatio:false,
-plugins:{legend:{display:false}},
-scales:{
-x:{ticks:{color:'white'},grid:{color:'rgba(255,255,255,0.1)'}},
-y:{ticks:{color:'white'},grid:{color:'rgba(255,255,255,0.1)'}}
-}
-}
+data:{labels:labels,datasets:[{data:values,backgroundColor:'#4fc3f7'}]},
+options:{responsive:true,maintainAspectRatio:false}
 });
 
-// =======================
-// PIE STATUS
-
+// PIE
 new Chart(document.getElementById("pieChart"),{
 type:'pie',
 data:{
@@ -226,12 +222,10 @@ backgroundColor:['#00e676','#ff9800','#ff5252']
 }
 });
 
-// =======================
-// EXTRA PIE
-
+// EXTRA
 new Chart(document.getElementById("pie1"),{
 type:'pie',
-data:{labels:['Support','Strategic','Core'],datasets:[{data:[40,30,30]}]}
+data:{labels:['Support','Strategic'],datasets:[{data:[60,40]}]}
 });
 
 new Chart(document.getElementById("pie2"),{
@@ -241,20 +235,13 @@ data:{labels:['Reported','Not'],datasets:[{data:[80,20]}]}
 
 new Chart(document.getElementById("pie3"),{
 type:'pie',
-data:{labels:['Good','Bad'],datasets:[{data:[70,30]}]}
+data:{labels:['Compliant','Non'],datasets:[{data:[70,30]}]}
 });
 
-// =======================
-// SHOW PAGE
-
+// SHOW
 document.body.style.display = "block";
 
-})
-.catch(err=>{
-console.error(err);
-alert("❌ Failed to load data");
 });
-
 </script>
 
 </body>
