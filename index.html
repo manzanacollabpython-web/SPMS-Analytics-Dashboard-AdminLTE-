@@ -3,140 +3,142 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPMS Dashboard Q1</title>
+<title>Q1 Compliance Dashboard</title>
 
-<!-- AdminLTE + Fonts -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700">
+<!-- AdminLTE + Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
 
 <style>
 body{
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  margin:0;
+  font-family: Arial;
+  background:#0f3b44;
   color:white;
   overflow:hidden;
 }
 
-.content-wrapper{
-  background: transparent;
-}
-
-.card{
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  border-radius:15px;
-}
-
-.small-box{
-  border-radius:15px;
+.container{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  padding:10px;
 }
 
 h1{
-  font-weight:bold;
   text-align:center;
-  margin-bottom:20px;
+  margin:5px;
 }
 
-.chart-container{
-  height:250px !important;
+.row{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.box{
+  flex:1;
+  background:#1b5a63;
+  border-radius:10px;
+  padding:10px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,0.2);
+}
+
+.big{
+  font-size:35px;
+  font-weight:bold;
+}
+
+.middle{
+  display:flex;
+  gap:10px;
+  flex:1;
+}
+
+.panel{
+  flex:1;
+  background:#1b5a63;
+  border-radius:10px;
+  padding:10px;
+}
+
+.bottom{
+  display:flex;
+  gap:10px;
+  flex:1;
+}
+
+canvas{
+  height:100% !important;
 }
 </style>
 </head>
 
-<body class="hold-transition layout-top-nav">
+<body style="display:none;">
 
-<div class="wrapper">
-
-<div class="content-wrapper">
-<div class="content pt-3">
-
-<div class="container-fluid">
+<div class="container">
 
 <h1>Q1 COMPLIANCE DASHBOARD</h1>
 
-<!-- KPI ROW -->
+<!-- TOP -->
 <div class="row">
-
-<div class="col-md-3">
-<div class="small-box bg-info">
-<div class="inner">
-<h3 id="total">0</h3>
-<p>Total KPI</p>
-</div>
-<div class="icon"><i class="fas fa-list"></i></div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="small-box bg-success">
-<div class="inner">
-<h3 id="ontime">0%</h3>
-<p>On-Time</p>
-</div>
-<div class="icon"><i class="fas fa-check"></i></div>
-</div>
+  <div class="box">
+    <div>Average</div>
+    <div class="big" id="avg">0%</div>
+  </div>
+  <div class="box">
+    <div>Overall</div>
+    <div class="big" id="overall">0%</div>
+  </div>
 </div>
 
-<div class="col-md-3">
-<div class="small-box bg-warning">
-<div class="inner">
-<h3 id="late">0%</h3>
-<p>Late</p>
-</div>
-<div class="icon"><i class="fas fa-clock"></i></div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="small-box bg-danger">
-<div class="inner">
-<h3 id="notsubmitted">0%</h3>
-<p>Not Submitted</p>
-</div>
-<div class="icon"><i class="fas fa-times"></i></div>
-</div>
-</div>
-
-</div>
-
-<!-- CHARTS -->
+<!-- KPI -->
 <div class="row">
-
-<div class="col-md-6">
-<div class="card">
-<div class="card-header">Performance by Indicator</div>
-<div class="card-body">
-<canvas id="barChart"></canvas>
-</div>
-</div>
+  <div class="box"><div>Total KPI</div><div class="big" id="total">0</div></div>
+  <div class="box"><div>On-Time</div><div class="big" id="ontime">0%</div></div>
+  <div class="box"><div>Late</div><div class="big" id="late">0%</div></div>
+  <div class="box"><div>Not Submitted</div><div class="big" id="notsubmitted">0%</div></div>
 </div>
 
-<div class="col-md-6">
-<div class="card">
-<div class="card-header">Submission Status</div>
-<div class="card-body">
-<canvas id="pieChart"></canvas>
+<!-- MIDDLE -->
+<div class="middle">
+  <div class="panel">
+    <h4>Performance</h4>
+    <canvas id="barChart"></canvas>
+  </div>
+
+  <div class="panel">
+    <h4>Status</h4>
+    <canvas id="pieChart"></canvas>
+  </div>
 </div>
-</div>
+
+<!-- BOTTOM -->
+<div class="bottom">
+  <div class="panel">
+    <h4>Category</h4>
+    <canvas id="pie1"></canvas>
+  </div>
+
+  <div class="panel">
+    <h4>Reported</h4>
+    <canvas id="pie2"></canvas>
+  </div>
+
+  <div class="panel">
+    <h4>Compliance</h4>
+    <canvas id="pie3"></canvas>
+  </div>
 </div>
 
 </div>
 
-</div>
-</div>
-</div>
-
-</div>
-
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 
-// 🔥 PALITAN MO LANG ITO (GOOGLE SHEET JSON)
+// 🔥 PALITAN MO ITO
 const sheetURL = "https://opensheet.elk.sh/YOUR_SHEET_ID/Sheet1";
 
 fetch(sheetURL)
@@ -144,70 +146,77 @@ fetch(sheetURL)
 .then(data => {
 
 let total = data.length;
-let ontime = 0;
-let late = 0;
-let notsubmitted = 0;
+let ontime = 0, late = 0, notsubmitted = 0;
+let sum = 0;
 
 let labels = [];
-let performance = [];
+let values = [];
 
-data.forEach(row => {
-
-let status = (row["STATUS"] || "").toLowerCase();
+data.forEach(row=>{
 let perf = parseFloat(row["PERFORMANCE RATE"]) || 0;
+let status = (row["STATUS"]||"").toLowerCase();
 
+sum += perf;
 labels.push(row["INDICATOR"]);
-performance.push(perf);
+values.push(perf);
 
-// logic
 if(status.includes("on")) ontime++;
 else if(status.includes("late")) late++;
 else notsubmitted++;
-
 });
 
-// percentages
-let ontimeP = ((ontime/total)*100).toFixed(1);
-let lateP = ((late/total)*100).toFixed(1);
-let notP = ((notsubmitted/total)*100).toFixed(1);
+let avg = (sum/total).toFixed(2);
 
 // display
 document.getElementById("total").innerText = total;
-document.getElementById("ontime").innerText = ontimeP+"%";
-document.getElementById("late").innerText = lateP+"%";
-document.getElementById("notsubmitted").innerText = notP+"%";
+document.getElementById("avg").innerText = avg+"%";
+document.getElementById("overall").innerText = avg+"%";
 
-// BAR CHART
-new Chart(document.getElementById("barChart"),{
+document.getElementById("ontime").innerText = ((ontime/total)*100).toFixed(1)+"%";
+document.getElementById("late").innerText = ((late/total)*100).toFixed(1)+"%";
+document.getElementById("notsubmitted").innerText = ((notsubmitted/total)*100).toFixed(1)+"%";
+
+// BAR
+new Chart(barChart,{
 type:'bar',
 data:{
 labels:labels,
-datasets:[{
-label:'Performance %',
-data:performance,
-backgroundColor:'#00c0ef'
-}]
-},
-options:{
-responsive:true,
-maintainAspectRatio:false
+datasets:[{data:values,backgroundColor:'#6ec1e4'}]
 }
 });
 
-// PIE
-new Chart(document.getElementById("pieChart"),{
+// PIE STATUS
+new Chart(pieChart,{
 type:'pie',
 data:{
 labels:['On-Time','Late','Not Submitted'],
 datasets:[{
 data:[ontime,late,notsubmitted],
-backgroundColor:['#00a65a','#f39c12','#dd4b39']
+backgroundColor:['green','orange','red']
 }]
 }
 });
 
+// EXTRA PIE
+new Chart(pie1,{
+type:'pie',
+data:{labels:['A','B'],datasets:[{data:[60,40]}]}
 });
 
+new Chart(pie2,{
+type:'pie',
+data:{labels:['Reported','Not'],datasets:[{data:[80,20]}]}
+});
+
+new Chart(pie3,{
+type:'pie',
+data:{labels:['Good','Bad'],datasets:[{data:[70,30]}]}
+});
+
+// SHOW PAGE
+document.body.style.display = "block";
+
+});
 </script>
 
 </body>
