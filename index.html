@@ -163,14 +163,13 @@ canvas{
 
 <script>
 
-// 🔥 WORKING GOOGLE SHEET CSV
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQtsHSDvB8iC3RSfJRmKf3MOkVb3LKkZ98aTxik3vDeOINaEFQW-4l_vTetjU05LszMK7cytmBq-i6n/pub?gid=959972291&single=true&output=csv";
 
 fetch(sheetURL)
 .then(res => res.text())
 .then(csv => {
 
-const rows = csv.split("\n").map(r => r.split(","));
+const rows = csv.trim().split("\n").map(r => r.split(","));
 const headers = rows[0];
 
 const data = rows.slice(1).map(row => {
@@ -206,8 +205,17 @@ document.getElementById("notsubmitted").innerText = ((notsubmitted/total)*100).t
 // BAR
 new Chart(document.getElementById("barChart"),{
 type:'bar',
-data:{labels:labels,datasets:[{data:values,backgroundColor:'#4fc3f7'}]},
-options:{responsive:true,maintainAspectRatio:false}
+data:{
+labels:labels,
+datasets:[{
+data:values,
+backgroundColor:'#4fc3f7'
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false
+}
 });
 
 // PIE
@@ -222,25 +230,13 @@ backgroundColor:['#00e676','#ff9800','#ff5252']
 }
 });
 
-// EXTRA
-new Chart(document.getElementById("pie1"),{
-type:'pie',
-data:{labels:['Support','Strategic'],datasets:[{data:[60,40]}]}
-});
-
-new Chart(document.getElementById("pie2"),{
-type:'pie',
-data:{labels:['Reported','Not'],datasets:[{data:[80,20]}]}
-});
-
-new Chart(document.getElementById("pie3"),{
-type:'pie',
-data:{labels:['Compliant','Non'],datasets:[{data:[70,30]}]}
-});
-
 // SHOW
 document.body.style.display = "block";
 
+})
+.catch(err=>{
+console.error(err);
+alert("❌ Error loading data");
 });
 </script>
 
