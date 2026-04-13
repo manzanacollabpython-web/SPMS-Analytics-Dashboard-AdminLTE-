@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Q1 Compliance Dashboard</title>
 
-<!-- AdminLTE + Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
-
 <style>
 body{
   margin:0;
@@ -57,9 +54,11 @@ h1{
 
 .panel{
   flex:1;
-  background:#1b5a63;
-  border-radius:10px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border-radius:15px;
   padding:10px;
+  border:1px solid rgba(255,255,255,0.2);
 }
 
 .bottom{
@@ -138,12 +137,24 @@ canvas{
 
 <script>
 
-// 🔥 PALITAN MO ITO
+// 🔥 DARK MODE FIX
+Chart.defaults.color = "white";
+Chart.defaults.borderColor = "rgba(255,255,255,0.2)";
+
+// 🔥 GOOGLE SHEET (FINAL)
 const sheetURL = "https://opensheet.elk.sh/1onyRaQHBKc7aioKII4UPYiDTWgbliAlvGywk9ceNf_4/Sheet1";
 
 fetch(sheetURL)
 .then(res => res.json())
 .then(data => {
+
+if(!Array.isArray(data)){
+  alert("❌ Check your Sheet name or sharing settings");
+  console.log(data);
+  return;
+}
+
+// =======================
 
 let total = data.length;
 let ontime = 0, late = 0, notsubmitted = 0;
@@ -167,7 +178,9 @@ else notsubmitted++;
 
 let avg = (sum/total).toFixed(2);
 
-// display
+// =======================
+// DISPLAY
+
 document.getElementById("total").innerText = total;
 document.getElementById("avg").innerText = avg+"%";
 document.getElementById("overall").innerText = avg+"%";
@@ -176,47 +189,72 @@ document.getElementById("ontime").innerText = ((ontime/total)*100).toFixed(1)+"%
 document.getElementById("late").innerText = ((late/total)*100).toFixed(1)+"%";
 document.getElementById("notsubmitted").innerText = ((notsubmitted/total)*100).toFixed(1)+"%";
 
-// BAR
-new Chart(barChart,{
+// =======================
+// BAR CHART
+
+new Chart(document.getElementById("barChart"),{
 type:'bar',
 data:{
 labels:labels,
-datasets:[{data:values,backgroundColor:'#6ec1e4'}]
+datasets:[{
+data:values,
+backgroundColor:'#4fc3f7'
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{legend:{display:false}},
+scales:{
+x:{ticks:{color:'white'},grid:{color:'rgba(255,255,255,0.1)'}},
+y:{ticks:{color:'white'},grid:{color:'rgba(255,255,255,0.1)'}}
+}
 }
 });
 
+// =======================
 // PIE STATUS
-new Chart(pieChart,{
+
+new Chart(document.getElementById("pieChart"),{
 type:'pie',
 data:{
 labels:['On-Time','Late','Not Submitted'],
 datasets:[{
 data:[ontime,late,notsubmitted],
-backgroundColor:['green','orange','red']
+backgroundColor:['#00e676','#ff9800','#ff5252']
 }]
 }
 });
 
+// =======================
 // EXTRA PIE
-new Chart(pie1,{
+
+new Chart(document.getElementById("pie1"),{
 type:'pie',
-data:{labels:['A','B'],datasets:[{data:[60,40]}]}
+data:{labels:['Support','Strategic','Core'],datasets:[{data:[40,30,30]}]}
 });
 
-new Chart(pie2,{
+new Chart(document.getElementById("pie2"),{
 type:'pie',
 data:{labels:['Reported','Not'],datasets:[{data:[80,20]}]}
 });
 
-new Chart(pie3,{
+new Chart(document.getElementById("pie3"),{
 type:'pie',
 data:{labels:['Good','Bad'],datasets:[{data:[70,30]}]}
 });
 
+// =======================
 // SHOW PAGE
+
 document.body.style.display = "block";
 
+})
+.catch(err=>{
+console.error(err);
+alert("❌ Failed to load data");
 });
+
 </script>
 
 </body>
